@@ -4,7 +4,7 @@ import { ColumnDef, flexRender, getCoreRowModel, getPaginationRowModel, useReact
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Transaction } from '@paddle/paddle-node-sdk';
+import { MockTransaction } from '@/types/mock-api';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -97,7 +97,7 @@ export function DataTable<TData, TValue>({
           size={'sm'}
           variant={'outline'}
           className={'flex gap-2 text-sm rounded-sm border-border'}
-          onClick={() => goToNextPage((data[data.length - 1] as Transaction).id)}
+          onClick={() => goToNextPage((data[data.length - 1] as MockTransaction).id)}
           disabled={!hasMore}
         >
           Next

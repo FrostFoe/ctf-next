@@ -2,11 +2,9 @@
 
 import { PriceSection } from '@/components/checkout/price-section';
 import { CheckoutFormGradients } from '@/components/gradients/checkout-form-gradients';
-import { type Environments, initializePaddle, type Paddle } from '@paddle/paddle-js';
-import type { CheckoutEventsData } from '@paddle/paddle-js/types/checkout/events';
-import throttle from 'lodash.throttle';
+import { MockCheckoutData } from '@/types/mock-checkout';
 import { useParams } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface PathParams {
   priceId: string;
@@ -17,62 +15,60 @@ interface Props {
   userEmail?: string;
 }
 
-export function CheckoutContents({ userEmail }: Props) {
-  const { priceId } = useParams<PathParams>();
-  const [quantity, setQuantity] = useState<number>(1);
-  const [paddle, setPaddle] = useState<Paddle | null>(null);
-  const [checkoutData, setCheckoutData] = useState<CheckoutEventsData | null>(null);
-
-  const handleCheckoutEvents = (event: CheckoutEventsData) => {
-    setCheckoutData(event);
+// Mock checkout data based on price ID
+const getMockCheckoutData = (priceId: string, quantity: number): MockCheckoutData => {
+  // Base prices - these will be multiplied by quantity
+  const basePrices: Record<string, number> = {
+    'pri_01hsxyh9txq4rzbrhbyngkhy46': 9.99,   // Starter
+    'pri_01hsxycme6m95sejkz7sbz5e9g': 29.99,  // Pro monthly  
+    'pri_01hsxyeb2bmrg618bzwcwvdd6q': 299.99, // Pro yearly
+    'pri_01hsxyff091kyc9rjzx7zm6yqh': 99.99,  // Advanced monthly
+    'pri_01hsxyfysbzf90tkh2wqbfxwa5': 999.99, // Advanced yearly
   };
 
-  const updateItems = useCallback(
-    throttle((paddle: Paddle, priceId: string, quantity: number) => {
-      paddle.Checkout.updateItems([{ priceId, quantity }]);
-    }, 1000),
-    [],
-  );
+  const productNames: Record<string, string> = {
+    'pri_01hsxyh9txq4rzbrhbyngkhy46': 'Starter Plan',   
+    'pri_01hsxycme6m95sejkz7sbz5e9g': 'Pro Plan (Monthly)',  
+    'pri_01hsxyeb2bmrg618bzwcwvdd6q': 'Pro Plan (Yearly)', 
+    'pri_01hsxyff091kyc9rjzx7zm6yqh': 'Advanced Plan (Monthly)', 
+    'pri_01hsxyfysbzf90tkh2wqbfxwa5': 'Advanced Plan (Yearly)', 
+  };
+
+  const basePrice = basePrices[priceId] || 29.99;
+  const subtotal = basePrice * quantity;
+  const tax = subtotal * 0.1; // 10% tax for demo
+  const total = subtotal + tax;
+  
+  return {
+    totals: {
+      total,
+      subtotal,
+      tax,
+    },
+    currency_code: 'USD',
+    items: [
+      {
+        price_name: productNames[priceId] || 'Pro Plan',
+      }
+    ],
+  };
+};
+
+export function CheckoutContents({ userEmail: _userEmail }: Props) {
+  const { priceId } = useParams<PathParams>();
+  const [quantity, setQuantity] = useState<number>(1);
+  const [checkoutData, setCheckoutData] = useState<MockCheckoutData | null>(null);
 
   useEffect(() => {
-    if (!paddle?.Initialized && process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN && process.env.NEXT_PUBLIC_PADDLE_ENV) {
-      initializePaddle({
-        token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN,
-        environment: process.env.NEXT_PUBLIC_PADDLE_ENV as Environments,
-        eventCallback: (event) => {
-          if (event.data && event.name) {
-            handleCheckoutEvents(event.data);
-          }
-        },
-        checkout: {
-          settings: {
-            variant: 'one-page',
-            displayMode: 'inline',
-            theme: 'dark',
-            allowLogout: !userEmail,
-            frameTarget: 'paddle-checkout-frame',
-            frameInitialHeight: 450,
-            frameStyle: 'width: 100%; background-color: transparent; border: none',
-            successUrl: '/checkout/success',
-          },
-        },
-      }).then(async (paddle) => {
-        if (paddle && priceId) {
-          setPaddle(paddle);
-          paddle.Checkout.open({
-            ...(userEmail && { customer: { email: userEmail } }),
-            items: [{ priceId: priceId, quantity: 1 }],
-          });
-        }
-      });
+    if (priceId) {
+      // Simulate loading delay to maintain original UX
+      const timer = setTimeout(() => {
+        setCheckoutData(getMockCheckoutData(priceId, quantity));
+      }, 500);
+      
+      return () => clearTimeout(timer);
     }
-  }, [paddle?.Initialized, priceId, userEmail]);
-
-  useEffect(() => {
-    if (paddle && priceId && paddle.Initialized) {
-      updateItems(paddle, priceId, quantity);
-    }
-  }, [paddle, priceId, quantity, updateItems]);
+  }, [priceId, quantity]);
 
   return (
     <div
@@ -87,7 +83,14 @@ export function CheckoutContents({ userEmail }: Props) {
         </div>
         <div className={'min-w-[375px] lg:min-w-[535px]'}>
           <div className={'text-base leading-[20px] font-semibold mb-8'}>Payment details</div>
-          <div className={'paddle-checkout-frame'} />
+          {/* Mock payment form to replace Paddle checkout */}
+          <div className="bg-card/50 backdrop-blur-sm rounded-lg p-6 min-h-[450px] flex items-center justify-center border border-border/20">
+            <div className="text-center text-muted-foreground">
+              <div className="text-lg mb-2">🔒 Secure Checkout</div>
+              <div>Payment processing disabled</div>
+              <div className="text-sm mt-2">UI preserved without Paddle integration</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -1,8 +1,16 @@
 import { QuantityField } from '@/components/checkout/quantity-field';
 import { Separator } from '@/components/ui/separator';
-import { CheckoutEventsData } from '@paddle/paddle-js/types/checkout/events';
-import { formatMoney } from '@/utils/paddle/parse-money';
+import { MockCheckoutData } from '@/types/mock-checkout';
 import { Skeleton } from '@/components/ui/skeleton';
+
+// Use existing formatMoney function from utils
+function formatMoney(amount: number = 0, currency: string = 'USD') {
+  const language = typeof navigator !== 'undefined' ? navigator.language : 'en-US';
+  return new Intl.NumberFormat(language ?? 'en-US', {
+    style: 'currency',
+    currency: currency,
+  }).format(amount);
+}
 
 interface LoadingTextProps {
   value: number | undefined;
@@ -18,7 +26,7 @@ function LoadingText({ value, currencyCode }: LoadingTextProps) {
 }
 
 interface Props {
-  checkoutData: CheckoutEventsData | null;
+  checkoutData: MockCheckoutData | null;
   quantity: number;
   handleQuantityChange: (quantity: number) => void;
 }

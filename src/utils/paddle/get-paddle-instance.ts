@@ -1,14 +1,15 @@
-import { Environment, LogLevel, Paddle, PaddleOptions } from '@paddle/paddle-node-sdk';
-
+// Mock Paddle instance - replaced Paddle SDK integration
 export function getPaddleInstance() {
-  const paddleOptions: PaddleOptions = {
-    environment: (process.env.NEXT_PUBLIC_PADDLE_ENV as Environment) ?? Environment.sandbox,
-    logLevel: LogLevel.error,
+  // Return a mock object that satisfies the interface requirements
+  return {
+    subscriptions: {
+      get: async () => null,
+      list: async () => ({ data: [], meta: { requestId: 'mock' } }),
+      cancel: async () => null,
+    },
+    transactions: {
+      list: async () => ({ data: [], meta: { requestId: 'mock' } }),
+    },
+    // Add other methods as needed
   };
-
-  if (!process.env.PADDLE_API_KEY) {
-    console.error('Paddle API key is missing');
-  }
-
-  return new Paddle(process.env.PADDLE_API_KEY!, paddleOptions);
 }

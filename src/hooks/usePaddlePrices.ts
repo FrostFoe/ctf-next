@@ -1,40 +1,32 @@
-import { Paddle, PricePreviewParams, PricePreviewResponse } from '@paddle/paddle-js';
 import { useEffect, useState } from 'react';
-import { PricingTier } from '@/constants/pricing-tier';
 
 export type PaddlePrices = Record<string, string>;
 
-function getLineItems(): PricePreviewParams['items'] {
-  const priceId = PricingTier.map((tier) => [tier.priceId.month, tier.priceId.year]);
-  return priceId.flat().map((priceId) => ({ priceId, quantity: 1 }));
-}
-
-function getPriceAmounts(prices: PricePreviewResponse) {
-  return prices.data.details.lineItems.reduce((acc, item) => {
-    acc[item.price.id] = item.formattedTotals.total;
-    return acc;
-  }, {} as PaddlePrices);
-}
+// Mock pricing data to maintain the UI without Paddle integration
+const mockPrices: PaddlePrices = {
+  'pri_01hsxyh9txq4rzbrhbyngkhy46': '$9.99', // Starter monthly/yearly (same price for simplicity)
+  'pri_01hsxycme6m95sejkz7sbz5e9g': '$29.99', // Pro monthly  
+  'pri_01hsxyeb2bmrg618bzwcwvdd6q': '$299.99', // Pro yearly
+  'pri_01hsxyff091kyc9rjzx7zm6yqh': '$99.99', // Advanced monthly
+  'pri_01hsxyfysbzf90tkh2wqbfxwa5': '$999.99', // Advanced yearly
+};
 
 export function usePaddlePrices(
-  paddle: Paddle | undefined,
-  country: string,
+  _paddle?: unknown, // Remove Paddle type dependency, mark as unused
+  _country?: string, // Mark as unused
 ): { prices: PaddlePrices; loading: boolean } {
   const [prices, setPrices] = useState<PaddlePrices>({});
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const paddlePricePreviewRequest: Partial<PricePreviewParams> = {
-      items: getLineItems(),
-      ...(country !== 'OTHERS' && { address: { countryCode: country } }),
-    };
-
-    setLoading(true);
-
-    paddle?.PricePreview(paddlePricePreviewRequest as PricePreviewParams).then((prices) => {
-      setPrices((prevState) => ({ ...prevState, ...getPriceAmounts(prices) }));
+    // Simulate loading delay to maintain the original UX behavior
+    const timer = setTimeout(() => {
+      setPrices(mockPrices);
       setLoading(false);
-    });
-  }, [country, paddle]);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, []); // Remove dependencies since we're not using them
+
   return { prices, loading };
 }

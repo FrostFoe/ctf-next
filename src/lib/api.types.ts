@@ -1,20 +1,8 @@
-import { Subscription, Transaction } from '@paddle/paddle-node-sdk';
-
-export interface SubscriptionResponse {
-  data?: Subscription[];
-  hasMore: boolean;
-  totalRecords: number;
-  error?: string;
-}
-
-export interface TransactionResponse {
-  data?: Transaction[];
-  hasMore: boolean;
-  totalRecords: number;
-  error?: string;
-}
-
-export interface SubscriptionDetailResponse {
-  data?: Subscription;
-  error?: string;
-}
+// Re-export mock types to maintain compatibility
+export type { 
+  MockSubscription as Subscription, 
+  MockTransaction as Transaction,
+  SubscriptionResponse,
+  TransactionResponse, 
+  SubscriptionDetailResponse 
+} from '@/types/mock-api';

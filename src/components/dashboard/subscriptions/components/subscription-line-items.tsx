@@ -1,11 +1,11 @@
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
-import { Subscription } from '@paddle/paddle-node-sdk';
+import { MockSubscription } from '@/types/mock-api';
 import { Fragment } from 'react';
 import { parseMoney } from '@/utils/paddle/parse-money';
 import Image from 'next/image';
 
 interface Props {
-  subscription?: Subscription;
+  subscription?: MockSubscription;
 }
 
 export function SubscriptionLineItems({ subscription }: Props) {
@@ -26,7 +26,7 @@ export function SubscriptionLineItems({ subscription }: Props) {
             </div>
           </div>
 
-          {subscription?.recurringTransactionDetails?.lineItems.map((lineItem) => {
+          {subscription?.recurringTransactionDetails?.lineItems?.map((lineItem) => {
             return (
               <Fragment key={lineItem.priceId}>
                 <div className={'col-span-6 border-border border-b py-6'}>

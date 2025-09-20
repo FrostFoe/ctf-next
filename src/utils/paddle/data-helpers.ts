@@ -1,4 +1,8 @@
-import { CheckoutEventsTimePeriod } from '@paddle/paddle-js';
+// Mock time period type to replace Paddle SDK type
+type CheckoutEventsTimePeriod = {
+  frequency: number;
+  interval: 'day' | 'week' | 'month' | 'year';
+};
 
 export function parseSDKResponse<T>(response: T): T {
   return JSON.parse(JSON.stringify(response));

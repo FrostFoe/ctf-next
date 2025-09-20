@@ -2,13 +2,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { Status } from '@/components/shared/status/status';
-import { Subscription } from '@paddle/paddle-node-sdk';
+import { MockSubscription } from '@/types/mock-api';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { parseMoney } from '@/utils/paddle/parse-money';
 
 interface Props {
-  subscriptions: Subscription[];
+  subscriptions: MockSubscription[];
   className: string;
 }
 
@@ -20,7 +20,7 @@ export function SubscriptionCards({ subscriptions, className }: Props) {
       <div className={cn('grid flex-1 items-start', className)}>
         {subscriptions.map((subscription) => {
           const subscriptionItem = subscription.items[0];
-          const price = subscriptionItem.quantity * parseFloat(subscriptionItem.price.unitPrice.amount);
+          const price = subscriptionItem.quantity * parseFloat(subscription.recurringTransactionDetails?.totals.total || '0');
           const formattedPrice = parseMoney(price.toString(), subscription.currencyCode);
           const frequency =
             subscription.billingCycle.frequency === 1
@@ -53,7 +53,7 @@ export function SubscriptionCards({ subscriptions, className }: Props) {
               </CardHeader>
               <CardContent className={'p-0 flex justify-between gap-3 flex-wrap xl:flex-nowrap'}>
                 <div className={'flex flex-col gap-3'}>
-                  <div className="text-base leading-6 text-secondary">{subscriptionItem.product.description}</div>
+                  <div className="text-base leading-6 text-secondary">Subscription plan</div>
                   <div className="text-base leading-[16px] text-primary">
                     {formattedPrice}
                     {frequency}

@@ -1,33 +1,71 @@
 'use server';
 
-import { getCustomerId } from '@/utils/paddle/get-customer-id';
-import { getErrorMessage, parseSDKResponse } from '@/utils/paddle/data-helpers';
-import { getPaddleInstance } from '@/utils/paddle/get-paddle-instance';
 import { TransactionResponse } from '@/lib/api.types';
+import { MockTransaction } from '@/types/mock-api';
 
-export async function getTransactions(subscriptionId: string, after: string): Promise<TransactionResponse> {
+// Mock transaction data to maintain UI functionality
+const mockTransactions: MockTransaction[] = [
+  {
+    id: 'txn_01hsxyh9txq4rzbrhbyngkhy46',
+    status: 'completed',
+    customerId: 'ctm_01hsxyh9txq4rzbrhbyngkhy46',
+    origin: 'web',
+    createdAt: '2024-01-15T10:30:00Z',
+    details: {
+      totals: {
+        total: '2999',
+      },
+    },
+    items: [
+      {
+        priceId: 'pri_01hsxycme6m95sejkz7sbz5e9g',
+        quantity: 1,
+        product: {
+          name: 'Pro Plan',
+        },
+      },
+    ],
+  },
+  {
+    id: 'txn_02hsxyh9txq4rzbrhbyngkhy46',
+    status: 'completed',
+    customerId: 'ctm_01hsxyh9txq4rzbrhbyngkhy46',
+    origin: 'subscription_charge',
+    createdAt: '2023-12-15T10:30:00Z',
+    details: {
+      totals: {
+        total: '2999',
+      },
+    },
+    items: [
+      {
+        priceId: 'pri_01hsxycme6m95sejkz7sbz5e9g',
+        quantity: 1,
+        product: {
+          name: 'Pro Plan',
+        },
+      },
+    ],
+  },
+];
+
+export async function getTransactions(_subscriptionId: string, _after: string): Promise<TransactionResponse> {
   try {
-    const customerId = await getCustomerId();
-    if (customerId) {
-      const transactionCollection = getPaddleInstance().transactions.list({
-        customerId: [customerId],
-        after: after,
-        perPage: 10,
-        status: ['billed', 'paid', 'past_due', 'completed', 'canceled'],
-        subscriptionId: subscriptionId ? [subscriptionId] : undefined,
-      });
-      const transactionData = await transactionCollection.next();
-      return {
-        data: parseSDKResponse(transactionData ?? []),
-        hasMore: transactionCollection.hasMore,
-        totalRecords: transactionCollection.estimatedTotal,
-        error: undefined,
-      };
-    } else {
-      return { data: [], hasMore: false, totalRecords: 0 };
-    }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (e) {
-    return getErrorMessage();
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    return {
+      data: mockTransactions,
+      hasMore: false,
+      totalRecords: mockTransactions.length,
+      error: undefined,
+    };
+  } catch (_e) {
+    return {
+      data: [],
+      hasMore: false,
+      totalRecords: 0,
+      error: 'Something went wrong, please try again later',
+    };
   }
 }

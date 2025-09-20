@@ -1,16 +1,16 @@
 import { Card } from '@/components/ui/card';
-import { Subscription, Transaction } from '@paddle/paddle-node-sdk';
+import { MockSubscription, MockTransaction } from '@/types/mock-api';
 import dayjs from 'dayjs';
 import { parseMoney } from '@/utils/paddle/parse-money';
 import { PaymentMethodSection } from '@/components/dashboard/subscriptions/components/payment-method-section';
 
 interface Props {
-  transactions?: Transaction[];
-  subscription?: Subscription;
+  transactions?: MockTransaction[];
+  subscription?: MockSubscription;
 }
 
 export function SubscriptionNextPaymentCard({ subscription, transactions }: Props) {
-  if (!subscription?.nextBilledAt) {
+  if (!subscription?.nextTransaction) {
     return null;
   }
   return (
@@ -23,13 +23,13 @@ export function SubscriptionNextPaymentCard({ subscription, transactions }: Prop
           </span>
           <span className={'text-base text-secondary leading-4'}>due</span>
           <span className={'ext-base leading-4 font-semibold text-primary'}>
-            {dayjs(subscription?.nextBilledAt).format('MMM DD, YYYY')}
+            {dayjs(subscription.nextTransaction.billingPeriod.startsAt).format('MMM DD, YYYY')}
           </span>
         </div>
       </div>
       <PaymentMethodSection
         transactions={transactions}
-        updatePaymentMethodUrl={subscription?.managementUrls?.updatePaymentMethod}
+        updatePaymentMethodUrl={undefined}
       />
     </Card>
   );

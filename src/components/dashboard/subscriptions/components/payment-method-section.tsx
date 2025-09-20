@@ -1,24 +1,29 @@
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { PaymentMethodDetails } from '@/components/dashboard/subscriptions/components/payment-method-details';
-import { PaymentType, Transaction } from '@paddle/paddle-node-sdk';
+import { MockTransaction } from '@/types/mock-api';
 
-function findPaymentMethodDetails(transactions?: Transaction[]) {
-  const transactionWithPaymentDetails = transactions?.find((transaction) => transaction.payments[0]?.methodDetails);
-  const firstValidPaymentMethod = transactionWithPaymentDetails?.payments[0].methodDetails;
-  return firstValidPaymentMethod ? firstValidPaymentMethod : { type: 'unknown' as PaymentType, card: null };
+function findPaymentMethodDetails(transactions?: MockTransaction[]) {
+  // Mock payment method details since we don't have real payment data
+  return { 
+    type: 'card' as const, 
+    card: {
+      brand: 'Visa',
+      last_four: '4242',
+      expiry_month: 12,
+      expiry_year: 2025
+    }
+  };
 }
 
 interface Props {
   updatePaymentMethodUrl?: string | null;
-  transactions?: Transaction[];
+  transactions?: MockTransaction[];
 }
 
 export function PaymentMethodSection({ transactions, updatePaymentMethodUrl }: Props) {
   const { type, card } = findPaymentMethodDetails(transactions);
-  if (type === 'unknown') {
-    return null;
-  }
+  
   return (
     <div className={'flex gap-6 pt-6 items-end justify-between @16xs:flex-wrap'}>
       <div className={'flex flex-col gap-4'}>

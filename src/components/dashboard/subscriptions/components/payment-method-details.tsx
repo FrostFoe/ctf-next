@@ -1,7 +1,16 @@
-import { PaymentMethodDetails as PaddlePaymentMethodDetails } from '@paddle/paddle-node-sdk';
 import { CreditCard } from 'lucide-react';
 
-const PaymentMethodLabels: Record<PaddlePaymentMethodDetails['type'], string> = {
+// Mock payment method types to replace Paddle types
+type PaymentMethodType = 'card' | 'alipay' | 'wire_transfer' | 'apple_pay' | 'google_pay' | 'paypal' | 'ideal' | 'bancontact' | 'korea_local' | 'offline' | 'unknown';
+
+interface MockCard {
+  brand: string;
+  last_four: string;
+  expiry_month: number;
+  expiry_year: number;
+}
+
+const PaymentMethodLabels: Record<PaymentMethodType, string> = {
   card: 'Card',
   alipay: 'Alipay',
   wire_transfer: 'Wire Transfer',
@@ -16,8 +25,8 @@ const PaymentMethodLabels: Record<PaddlePaymentMethodDetails['type'], string> = 
 };
 
 interface Props {
-  type: PaddlePaymentMethodDetails['type'];
-  card?: PaddlePaymentMethodDetails['card'];
+  type: PaymentMethodType;
+  card?: MockCard;
 }
 
 export function PaymentMethodDetails({ type, card }: Props) {
@@ -25,7 +34,7 @@ export function PaymentMethodDetails({ type, card }: Props) {
     return (
       <>
         <CreditCard size={18} />
-        <span className={'text-base text-secondary leading-4'}>**** {card?.last4}</span>
+        <span className={'text-base text-secondary leading-4'}>**** {card?.last_four}</span>
       </>
     );
   } else {

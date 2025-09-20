@@ -1,9 +1,17 @@
 import { Skeleton } from '@/components/ui/skeleton';
-import { CheckoutEventsData } from '@paddle/paddle-js/types/checkout/events';
-import { formatMoney } from '@/utils/paddle/parse-money';
+import { MockCheckoutData } from '@/types/mock-checkout';
+
+// Use existing formatMoney function from utils
+function formatMoney(amount: number = 0, currency: string = 'USD') {
+  const language = typeof navigator !== 'undefined' ? navigator.language : 'en-US';
+  return new Intl.NumberFormat(language ?? 'en-US', {
+    style: 'currency',
+    currency: currency,
+  }).format(amount);
+}
 
 interface Props {
-  checkoutData: CheckoutEventsData | null;
+  checkoutData: MockCheckoutData | null;
 }
 
 export function CheckoutPriceAmount({ checkoutData }: Props) {

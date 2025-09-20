@@ -3,10 +3,10 @@ import { CheckoutPriceContainer } from '@/components/checkout/checkout-price-con
 import { CheckoutPriceAmount } from '@/components/checkout/checkout-price-amount';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Separator } from '@/components/ui/separator';
-import { CheckoutEventsData } from '@paddle/paddle-js/types/checkout/events';
+import { MockCheckoutData } from '@/types/mock-checkout';
 
 interface Props {
-  checkoutData: CheckoutEventsData | null;
+  checkoutData: MockCheckoutData | null;
   quantity: number;
   handleQuantityChange: (quantity: number) => void;
 }

@@ -1,7 +1,7 @@
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { Transaction } from '@paddle/paddle-node-sdk';
+import { MockTransaction } from '@/types/mock-api';
 import dayjs from 'dayjs';
 import { parseMoney } from '@/utils/paddle/parse-money';
 import { Status } from '@/components/shared/status/status';
@@ -9,7 +9,7 @@ import { getPaymentReason } from '@/utils/paddle/data-helpers';
 
 interface Props {
   subscriptionId: string;
-  transactions?: Transaction[];
+  transactions?: MockTransaction[];
 }
 
 export function SubscriptionPastPaymentsCard({ subscriptionId, transactions }: Props) {
@@ -23,16 +23,16 @@ export function SubscriptionPastPaymentsCard({ subscriptionId, transactions }: P
       </CardTitle>
       <CardContent className={'p-0'}>
         {transactions?.slice(0, 3).map((transaction) => {
-          const formattedPrice = parseMoney(transaction.details?.totals?.total, transaction.currencyCode);
+          const formattedPrice = parseMoney(transaction.details?.totals?.total, 'USD');
           return (
             <div key={transaction.id} className={'flex flex-col gap-4 border-border border-b py-6'}>
               <div className={'text-secondary text-base leading-4'}>
-                {dayjs(transaction.billedAt ?? transaction.createdAt).format('MMM DD, YYYY')}
+                {dayjs(transaction.createdAt).format('MMM DD, YYYY')}
               </div>
               <div className={'flex-wrap flex items-center gap-5'}>
                 <span className={'font-semibold text-base leading-4'}>{getPaymentReason(transaction.origin)}</span>
                 <span className={'text-base leading-6 text-secondary'}>
-                  {transaction.details?.lineItems[0].product?.name}
+                  {transaction.items[0]?.product?.name}
                 </span>
               </div>
               <div className={'flex gap-5 items-center flex-wrap'}>

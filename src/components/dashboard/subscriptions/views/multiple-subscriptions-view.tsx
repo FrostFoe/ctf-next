@@ -1,9 +1,9 @@
 import { DashboardPageHeader } from '@/components/dashboard/layout/dashboard-page-header';
 import { SubscriptionCards } from '@/components/dashboard/subscriptions/components/subscription-cards';
-import { Subscription } from '@paddle/paddle-node-sdk';
+import { MockSubscription } from '@/types/mock-api';
 
 interface Props {
-  subscriptions: Subscription[];
+  subscriptions: MockSubscription[];
 }
 
 export function MultipleSubscriptionsView({ subscriptions }: Props) {

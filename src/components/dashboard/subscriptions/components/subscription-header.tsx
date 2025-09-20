@@ -1,4 +1,4 @@
-import { Subscription } from '@paddle/paddle-node-sdk';
+import { MockSubscription } from '@/types/mock-api';
 import Image from 'next/image';
 import { Status } from '@/components/shared/status/status';
 import { parseMoney } from '@/utils/paddle/parse-money';
@@ -8,7 +8,7 @@ import { SubscriptionAlerts } from '@/components/dashboard/subscriptions/compone
 import { MobileSidebar } from '@/components/dashboard/layout/mobile-sidebar';
 
 interface Props {
-  subscription: Subscription;
+  subscription: MockSubscription;
 }
 
 export function SubscriptionHeader({ subscription }: Props) {

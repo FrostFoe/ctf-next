@@ -1,23 +1,31 @@
-import { Subscription } from '@paddle/paddle-node-sdk';
+import { MockSubscription } from '@/types/mock-api';
 import { Alert } from '@/components/ui/alert';
 import dayjs from 'dayjs';
 
 interface Props {
-  subscription: Subscription;
+  subscription?: MockSubscription;
 }
+
 export function SubscriptionAlerts({ subscription }: Props) {
+  if (!subscription) return null;
+  
   if (subscription.status === 'canceled') {
     return (
       <Alert variant={'destructive'} className={'mb-10'}>
-        This subscription was canceled on {dayjs(subscription.canceledAt).format('MMM DD, YYYY [at] h:mma')} and is no
-        longer active.
+        This subscription was canceled and is no longer active.
       </Alert>
     );
-  } else if (subscription.scheduledChange && subscription.scheduledChange.action === 'cancel') {
+  } else if (subscription.status === 'past_due') {
+    return (
+      <Alert variant={'destructive'} className={'mb-10'}>
+        This subscription is past due. Please update your payment information.
+      </Alert>
+    );
+  } else if (subscription.status === 'paused') {
     return (
       <Alert className={'mb-10'}>
-        This subscription is scheduled to be canceled on{' '}
-        {dayjs(subscription.scheduledChange.effectiveAt).format('MMM DD, YYYY [at] h:mma')}
+        This subscription is currently paused and will resume on{' '}
+        {dayjs(subscription.currentBillingPeriod.endsAt).format('MMM DD, YYYY')}
       </Alert>
     );
   }
